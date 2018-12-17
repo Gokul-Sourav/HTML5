@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>HTML5 - L2</title>
+	</head>
+	<body onload="LoadLocation()">
+        <center>
+            <h2>HTML5 - L2 Hands-on Assignment</h2>
+            <table border=1>
+                <tr>
+                    <td width=500>
+                        <div>
+                            <img ondrag="drag(event)" draggable="true" id="img">
+                        </div>
+                        <br><br>
+                        <svg height="160" width="160" ondragover="allowDrop(event)" ondrop="drop(event)">
+                            <circle cx="80" cy="80" r="75"  fill="yellow" />
+                            <image  x="30" y="30" height="80" width="80"/>
+                        </svg>
+                        <svg height="160" width="160" ondragover="allowDrop(event)" ondrop="drop(event)">
+                            <circle cx="80" cy="80" r="75"  fill="green" />
+                            <image  x="30" y="30" height="80" width="80"/>
+                        </svg>
+                    </td>
+					<td>
+						<img style="width:10rem;" src="https://www.gstatic.com/webp/gallery/1.jpg" ondrag="drag(event)" draggable="true">
+						<h3>Please Drag and Drop me in circle</h3>
+					</td>
+                    
+				</tr>
+                <tr>
+					<td>
+                        <p id="demo">
+                            <h3>Please check your current location:  
+                            <button id="btn1" onclick="getLocation()">Current Location</button></h3>
+                        </p>
+                    </td>
+                    
+                    <td width=500>
+                        <p id="demo"></p>
+                        <label id="lbl1" ></label>
+                        <br/><br/>
+                        <div id="mapholder0" border=1></div>
+                        <h4 id="noteMsg"><b>Note:</b> <i id="italicText">Always check your location in <u>chrome</u> or <u>firefox</u></i></h4>
+                    </td>
+                </tr>
+            </table>
+        </center>
+		<script>
+			function allowDrop(ev) {
+				ev.preventDefault();
+			}
+
+			function drag(ev) {
+				ev.dataTransfer.setData("text", ev.target.src);
+			}
+
+			function drop(ev) {
+				ev.preventDefault();
+				ev.target.setAttribute("href",ev.dataTransfer.getData("text"));
+			}
+
+			function getLocation() {
+				var x = document.getElementById("demo");
+				if (navigator.geolocation) {
+					navigator.geolocation.getCurrentPosition(showPosition, showError);
+				} else {
+					x.innerHTML = "This browser does not support geolocation!";
+				}
+			}
+    
+			function showPosition(position) {
+				var y = document.getElementById("demo");
+				y.innerHTML = "Geolocation is not supported by this browser.";
+				var latlon = position.coords.latitude + "," + position.coords.longitude;
+				var img_url = "https://maps.googleapis.com/maps/api/staticmap?center="
+					+latlon+"&zoom=14&size=400x300&key=AIzaSyBu-916DdpKAjTmJNIgngS6HL_kDIKU0aU";
+				document.getElementById("mapholder0").innerHTML = "<img src='"+img_url+"'>";
+				if(typeof(Storage) != "undefined") {
+					localStorage.setItem("LatSaved", position.coords.latitude);
+					localStorage.setItem("LonSaved", position.coords.longitude);
+					document.getElementById("lbl1").innerHTML = "<b>Current Location:</b> Latitude-> " + position.coords.latitude + " & Longitude-> " + position.coords.longitude;
+				} else {
+					document.getElementById("lbl1").innerHTML = "Web Storage is incompatible with your browser!"
+				}
+			}
+    
+			function LoadLocation(){
+				document.getElementById("lbl1").innerHTML = "<b>Previous Location:</b> Latitude-> " + localStorage.LatSaved + " & Longitude-> " + localStorage.LonSaved;
+				if(localStorage.LatSaved != null || localStorage.LonSaved != null){
+					var latlon1 = localStorage.LatSaved + "," + localStorage.LonSaved;
+					var img_url1 = "https://maps.googleapis.com/maps/api/staticmap?center="
+						+latlon1+"&zoom=14&size=400x300&key=AIzaSyBu-916DdpKAjTmJNIgngS6HL_kDIKU0aU";
+					document.getElementById("mapholder0").innerHTML = "<img src='"+img_url1+"'>";
+				}
+			}
+    
+			function showError(error) {
+				switch(error.code) {
+					case error.PERMISSION_DENIED:
+						x.innerHTML = "User denied the request for Geolocation."
+						break;
+					case error.POSITION_UNAVAILABLE:
+						x.innerHTML = "Location information is unavailable."
+						break;
+					case error.TIMEOUT:
+						x.innerHTML = "The request to get user location timed out."
+						break;
+					case error.UNKNOWN_ERROR:
+						x.innerHTML = "An unknown error occurred."
+						break;
+				}
+			}
+			
+		</script>
+	</body>
+</html>
